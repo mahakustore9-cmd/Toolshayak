@@ -1,0 +1,10 @@
+{
+  "name": "ToolSahayak",
+  "description": "Free Online Tools & Simple Guides for everyday PDF, image, QR code, and calculator tasks.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
