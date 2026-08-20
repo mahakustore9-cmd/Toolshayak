@@ -1,60 +1,60 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 interface AdPlaceholderProps {
-  slot: "header-banner" | "in-content" | "in-article" | "footer-banner" | "sidebar";
+  slot?: "header-banner" | "in-content" | "in-article" | "footer-banner" | "sidebar" | "responsive-banner" | "sidebar-rect" | string;
   className?: string;
 }
 
-export const AdPlaceholder: React.FC<AdPlaceholderProps> = ({ slot, className = "" }) => {
-  const getSlotDetails = () => {
-    switch (slot) {
-      case "header-banner":
-        return {
-          title: "Leaderboard Advertisement Slot (728x90 / Responsive)",
-          height: "min-h-[90px]",
-          badge: "Top Banner Ad",
-        };
-      case "in-article":
-        return {
-          title: "In-Article Native Advertisement Slot",
-          height: "min-h-[120px] sm:min-h-[140px]",
-          badge: "In-Article Ad",
-        };
-      case "sidebar":
-        return {
-          title: "Medium Rectangle Ad Slot (300x250)",
-          height: "min-h-[250px]",
-          badge: "Sidebar Ad",
-        };
-      case "footer-banner":
-        return {
-          title: "Responsive Footer Display Ad Slot",
-          height: "min-h-[90px]",
-          badge: "Footer Banner Ad",
-        };
-      case "in-content":
-      default:
-        return {
-          title: "Responsive Content Display Ad Slot",
-          height: "min-h-[100px]",
-          badge: "Display Ad",
-        };
-    }
-  };
+export const AdPlaceholder: React.FC<AdPlaceholderProps> = ({ className = "" }) => {
+  const adRef = useRef<HTMLDivElement>(null);
 
-  const details = getSlotDetails();
+  useEffect(() => {
+    const target = adRef.current;
+    if (!target) return;
+
+    // Dynamically inject invoke.js for the Native Banner if not present
+    const scriptSrc = "https://pl30937753.effectivecpmnetwork.com/a4bfefbda737d7e73f593dbf2b47cb78/invoke.js";
+    
+    // Create script tag
+    const script = document.createElement("script");
+    script.src = scriptSrc;
+    script.async = true;
+    script.setAttribute("data-cfasync", "false");
+
+    try {
+      target.appendChild(script);
+    } catch {
+      // safe fallback
+    }
+
+    return () => {
+      if (target && script.parentNode === target) {
+        try {
+          target.removeChild(script);
+        } catch {
+          // ignore cleanup error
+        }
+      }
+    };
+  }, []);
 
   return (
     <div 
-      className={`w-full max-w-5xl mx-auto my-5 p-4 bg-slate-100 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center text-center text-slate-400 transition-all select-none ${details.height} ${className}`}
-      aria-label="Advertisement Container"
+      className={`w-full max-w-5xl mx-auto my-4 flex flex-col items-center justify-center overflow-hidden ${className}`}
+      aria-label="Advertisement"
     >
-      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-        Advertisement Placeholder
-      </span>
-      <p className="text-[11px] mt-1 text-slate-500 font-medium">
-        Managed via Google AdSense • {details.badge}
-      </p>
+      <div className="w-full text-center">
+        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+          Advertisement
+        </span>
+        <div 
+          ref={adRef}
+          className="w-full min-h-[90px] flex items-center justify-center bg-slate-50 border border-slate-200/80 rounded-xl overflow-hidden shadow-2xs p-1"
+        >
+          <div id="container-a4bfefbda737d7e73f593dbf2b47cb78" className="w-full flex items-center justify-center"></div>
+        </div>
+      </div>
     </div>
   );
 };
+
